@@ -1,7 +1,11 @@
 import gym
+import sys
+
+sys.path.insert(0,'../')
+import Games
 
 class Config():
-    env_name = 'MountainCar-v0'
+    env_name = 'CartPole-v0'
     mode = 'discrete'
 
     if env_name == 'CartPole-v0' or env_name == 'MountainCar-v0' or env_name == 'Acrobot-v1':
@@ -26,10 +30,10 @@ class Config():
     mut_node_p = .2
     mut_enabled_p = .3
 
-    num_generations = 1000
+    num_generations = 10000
     num_policies = 100
-    num_iterations = 3
+    num_iterations = 1
     checkpoint_freq = 5
 
-    score_to_solve = -110
+    score_to_solve = 195
     episodes_to_solve = 100

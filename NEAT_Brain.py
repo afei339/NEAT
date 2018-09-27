@@ -69,8 +69,7 @@ class Network(object):#graph made up on nodes and connections that forms the neu
     #feed forward pass of the network
     def predict(self, s):
         layered = list(self.Nodes)
-        layered.sort(key=lambda x: x.Layer)
-        
+        layered.sort(key=lambda x: x.Layer)#sort by topological layer
         node_values = [None]*len(layered)
         for i in range(config.s_size):
             node_values[i] = s[i]
@@ -97,3 +96,17 @@ class Network(object):#graph made up on nodes and connections that forms the neu
             output_values.append(node_values[i])
 
         return output_values
+
+    #plays a game until completion 
+    def playthrough(self):
+        s = env.reset()
+        total_reward = 0
+        while True:
+            a = self.predict(s)
+            a = np.argmax(a)
+            s, reward, done, _ = env.step(a)
+
+            total_reward = reward
+
+            if done:
+                return total_reward

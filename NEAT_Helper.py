@@ -44,8 +44,6 @@ def add_node(Network):
     new_node.InputConnections.append(selected_connection.InNode)
     new_node.OutputConnections.append(selected_connection.OutNode)
     Network.Nodes.append(new_node)
-    
-    update_layers(Network, new_node)#update topological numbers
 
     #Add the connections with the new node to the network 
     Network.Connections.append(Connection(selected_connection.InNode, Network.currID, 1, 0))
@@ -61,6 +59,8 @@ def add_node(Network):
     for i in Network.OutNodes:
         Network.AvailConnections.append([Network.currID, i.NodeID])
 
+    update_layers(Network, new_node)#update topological numbers
+
     Network.currID += 1
 
 #changes the enabled/disabled state of a random connection in the net
@@ -75,7 +75,12 @@ def update_layers(Network, initial_node):
     frontier.put(initial_node)
     while not frontier.empty():
         current = frontier.get()
-        current.Layer += 1
+        inputlayers = []
+        for i in current.InputConnections:
+            inputlayers.append(Network.get_Node(i).Layer) 
+        
+        current.Layer = max(inputlayers) + 1
+
         for i in current.OutputConnections:
             frontier.put(Network.get_Node(i))
 

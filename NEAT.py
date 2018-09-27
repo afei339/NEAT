@@ -17,34 +17,20 @@ for i in range(config.num_policies):
     pop = Network()
     population.append(pop)
 
-
 for episode in range(config.num_generations):
     Reward = np.zeros(config.num_policies)
     for member in range(config.num_policies):#test each member of the population 
         policy = population[member]
-
         for i in range(config.num_iterations):#play the game multiple times for each network 
-            #ensures the network performs well with different starting conditons etc. 
-            s = env.reset()
-            while True:
-                a = policy.predict(s)
-                a = np.argmax(a)
-                s, reward, done, _ = env.step(a)
+            Reward[policy] += policy.playthrough(env)    
 
-                #for classic control, the reward is summed up throughout the game 
-                Reward[member] += reward
-                if done:
-                    break
-    
     Reward /= config.num_iterations
     print(episode, np.mean(Reward), np.max(Reward))
     l1, l2 = zip(*sorted(zip(Reward, population)))#sort based on score 
     
     #kill off the weak
-    #TODO make probability based 
     population = list(l2[int(config.percentage_killed*config.num_policies):])
     Reward = list(l1[int(config.percentage_killed*config.num_policies):])
-
 
     if (episode % config.checkpoint_freq == 0) and  (episode != 0):
         champ = population[-1]#currently only test the top score over the course of 100 episodes
@@ -56,17 +42,10 @@ for episode in range(config.num_generations):
         #if this score beats a set threshold, the network has 'solved' the environment 
         summed_reward = 0
         for i in range(config.episodes_to_solve):
-            s = env.reset()
-            while True:
-                a = champ.predict(s)
-                a = np.argmax(a)
-                s, reward, done, _ = env.step(a)
+            summed_reward += policy.playthrough(env)
 
-                summed_reward += reward
-                if done:
-                    break
-        
         score = summed_reward/config.episodes_to_solve
+        
         print 'Average score over ' + \
             str(config.episodes_to_solve) + ' episodes: ' + str(score)
         if (score > config.score_to_solve):
@@ -77,7 +56,7 @@ for episode in range(config.num_generations):
     mutants = [] 
     for i in range(int(config.percentage_killed*config.num_policies)):
         #picks a policy to mutate based on the normalised score
-        curr_pol = np.random.choice(population, p = Reward/sum(Reward))
+        curr_pol = np.random.choice(population)# p = Reward/sum(Reward))
         new_pol = copy.deepcopy(curr_pol)
         mutate(new_pol)
         mutants.append(new_pol)
