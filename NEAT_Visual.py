@@ -15,8 +15,8 @@ hidden = network.Nodes[config.s_size + config.a_size:]
 hidden.sort(key=lambda x: x.Layer)
 
 max_width = 0
+curr_width = 0
 for i in range(len(hidden)):
-    curr_width = 0
     curr_layer = 1
     if hidden[i].Layer == curr_layer:
         curr_width += 1
@@ -25,6 +25,7 @@ for i in range(len(hidden)):
         if curr_width > max_width:
             max_width == curr_width
         curr_width = 0
+
 max_width = max([curr_width, max_width, config.s_size, config.a_size])
 
 max_depth = 0

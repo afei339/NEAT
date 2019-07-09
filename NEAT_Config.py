@@ -1,11 +1,14 @@
 import gym
+import os
 import sys
+
 
 sys.path.insert(0,'../')
 import Games
+import GP_Games
 
 class Config():
-    env_name = 'CartPole-v0'
+    env_name = 'GP_Water-v0'
     mode = 'discrete'
 
     if env_name == 'CartPole-v0' or env_name == 'MountainCar-v0' or env_name == 'Acrobot-v1':
@@ -14,7 +17,7 @@ class Config():
         mode = 'continuous'
 
     game = gym.make(env_name)
-    s_size = len(game.reset())
+    s_size = len(game.reset().flatten());
     if mode == 'discrete':
         a_size = game.action_space.n
     else:
@@ -32,8 +35,12 @@ class Config():
 
     num_generations = 10000
     num_policies = 100
-    num_iterations = 1
-    checkpoint_freq = 5
+    num_iterations = 5
+    checkpoint_freq = 1
 
     score_to_solve = 195
     episodes_to_solve = 100
+
+    model_path = './models/' + str(env_name) + '/'
+    if not os.path.exists(model_path):
+        os.makedirs(model_path)

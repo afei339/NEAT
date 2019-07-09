@@ -72,10 +72,12 @@ class Network(object):#graph made up on nodes and connections that forms the neu
         layered.sort(key=lambda x: x.Layer)#sort by topological layer
         node_values = [None]*len(layered)
         for i in range(config.s_size):
+            
             node_values[i] = s[i]
         for i in range(len(s), len(layered)):
             values = []
             connections = []
+            
             for NodeID in layered[i].InputConnections:
                 values.append(node_values[NodeID])
                 con = self.get_Connection(NodeID, layered[i].NodeID)
@@ -98,11 +100,11 @@ class Network(object):#graph made up on nodes and connections that forms the neu
         return output_values
 
     #plays a game until completion 
-    def playthrough(self):
+    def playthrough(self, env):
         s = env.reset()
         total_reward = 0
         while True:
-            a = self.predict(s)
+            a = self.predict(s.flatten())
             a = np.argmax(a)
             s, reward, done, _ = env.step(a)
 
